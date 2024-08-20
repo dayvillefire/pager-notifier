@@ -1,0 +1,22 @@
+/**
+ * PAGER-BUZZER - @jbuchbinder
+ * 
+ * SETTINGS FILE
+ */
+
+#define BUZZER_PIN 23
+#define BUZZ_COUNT 22
+#define BUZZ_DURATION 75
+#define BUZZ_INTERVAL 75
+
+// WiFi
+const char *ssid = "ssid";
+const char *password = "password";
+
+// MQTT Broker
+const char *mqtt_broker = "mqtt.one";
+const char *topic = "topic/subtopic";
+const char *mqtt_username = "user";
+const char *mqtt_password = "password";
+const int mqtt_port = 1883;
+
