@@ -1,4 +1,4 @@
-# PAGER-BUZZER
+# PAGER-NOTIFIER
 
 Simple notifier for ESP32 that sounds a buzzer when an MQTT message is received.
 
