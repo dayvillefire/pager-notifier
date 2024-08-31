@@ -1,4 +1,7 @@
-all: build
+all: build monitor
 
 build:
-	pio run -t upload && pio device monitor -b 115200
+	pio run -t upload
+
+monitor:
+	pio device monitor -b 115200

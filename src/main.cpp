@@ -11,7 +11,7 @@ PubSubClient client(espClient);
 
 void alarm()
 {
-    Serial.print("Alarm: ");
+    Serial.print("alarm: ");
     for (int i = 0; i < BUZZ_COUNT; i++)
     {
         Serial.print("LOW ");
@@ -27,29 +27,9 @@ void alarm()
 
 void pubSubCallback(char *topic, byte *raw, unsigned int length)
 {
-    Serial.print("Message arrived in topic: ");
+    Serial.print("pubSubCallback: Message arrived in topic: ");
     Serial.println(topic);
     alarm();
-}
-
-bool mqtt_connect(PubSubClient *client)
-{
-
-    String client_id = "esp32-client-";
-    client_id += String(WiFi.macAddress());
-    Serial.printf("The client %s connects to the public MQTT broker\n", client_id.c_str());
-    if (client->connect(client_id.c_str(), mqtt_username, mqtt_password))
-    {
-        Serial.println("Public EMQX MQTT broker connected");
-        return true;
-    }
-    else
-    {
-        Serial.print("Failed with state ");
-        Serial.print(client->state());
-        delay(2000);
-        return false;
-    }
 }
 
 void setup()
@@ -67,34 +47,41 @@ void setup()
     while (WiFi.status() != WL_CONNECTED)
     {
         delay(500);
-        Serial.println("Connecting to WiFi..");
+        Serial.println("setup: Connecting to WiFi..");
     }
-    Serial.println("Connected to the Wi-Fi network");
+    Serial.println("setup: Connected to the Wi-Fi network");
 
     // connecting to a mqtt broker
     client.setServer(mqtt_broker, mqtt_port);
     client.setCallback(pubSubCallback);
+
     while (!client.connected())
     {
-        if (mqtt_connect(&client))
+        String client_id = "esp32-client-";
+        client_id += String(WiFi.macAddress());
+        Serial.printf("setup: The client %s connects to the public MQTT broker\n", client_id.c_str());
+        if (client.connect(client_id.c_str(), mqtt_username, mqtt_password))
         {
-            break;
+            Serial.println("setup: Public EMQX MQTT broker connected");
+        }
+        else
+        {
+            Serial.print("setup: Failed with state ");
+            Serial.print(client.state());
+            Serial.print("\n");
+            delay(2000);
         }
     }
 
     // Publish and subscribe
-    Serial.println("- Subscribe to topic");
+    Serial.println("setup: Subscribe to topic");
     client.subscribe(topic);
+
+    Serial.println("ONLINE: TEST BEEP");
+    alarm();
 }
 
 void loop()
 {
-    while (!client.connected())
-    {
-        if (mqtt_connect(&client))
-        {
-            break;
-        }
-    }
     client.loop();
 }
