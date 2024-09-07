@@ -2,12 +2,12 @@
 #include <cstring>
 
 #include <WiFi.h>
-#include <PubSubClient.h>
+#include <ESPPubSubClientWrapper.h>
 
 #include "config.h"
 
 WiFiClient espClient;
-PubSubClient client(espClient);
+ESPPubSubClientWrapper client((const char *)mqtt_broker, mqtt_port);
 
 void alarm()
 {
@@ -52,9 +52,12 @@ void setup()
     Serial.println("setup: Connected to the Wi-Fi network");
 
     // connecting to a mqtt broker
-    client.setServer(mqtt_broker, mqtt_port);
-    client.setCallback(pubSubCallback);
+    String client_id = "esp32-client-";
+    client_id += String(WiFi.macAddress());
+    client.connect(client_id.c_str(), mqtt_username, mqtt_password);
+    client.on(topic, pubSubCallback);
 
+    /*
     while (!client.connected())
     {
         String client_id = "esp32-client-";
@@ -76,6 +79,7 @@ void setup()
     // Publish and subscribe
     Serial.println("setup: Subscribe to topic");
     client.subscribe(topic);
+    */
 
     Serial.println("ONLINE: TEST BEEP");
     alarm();
